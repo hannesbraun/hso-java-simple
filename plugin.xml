@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+	<extension point="org.eclipse.ui.newWizards">
+		<category
+			name="Hochschule Offenburg"
+			id="hso.plugins">
+		</category>
+		<wizard
+			id="hso.plugins.jsimple.wizards.NewSimpleProgramWizard"
+			name="HSO Simple Program"
+			icon="icons/hso.png"
+			class="hso.plugins.jsimple.wizards.NewSimpleProgramWizard"
+			category="hso.plugins">
+			<description>
+				Creates a HSO Simple Program
+			</description>
+		</wizard>
+	</extension>
+
+	<extension point="org.eclipse.ui.navigator.navigatorContent">
+		<commonWizard
+			type="new"
+			wizardId="hso.plugins.jsimple.wizards.NewSimpleProgramWizard">
+			<enablement>
+				<or>
+					<instanceof value="org.eclipse.jdt.core.IPackageFragment" />
+					<instanceof value="org.eclipse.jdt.core.IPackageFragmentRoot" />
+					<instanceof value="org.eclipse.jdt.core.ICompilationUnit" />
+				</or>
+			</enablement>
+		</commonWizard>
+	</extension>
+
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar">
+			<toolbar
+				id="hso.plugins.jsimple.toolbar"
+ 				label="HSO JavaSimple">
+				<command commandId="org.eclipse.ui.newWizard">
+					<parameter name="newWizardId" value="hso.plugins.jsimple.wizards.NewSimpleProgramWizard"/>
+				</command>
+			</toolbar>
+		</menuContribution>
+	</extension>
+
+	<extension point="org.eclipse.jdt.core.classpathContainerInitializer">
+		<classpathContainerInitializer
+			class="hso.plugins.jsimple.JSimpleClasspathInitializer"
+			id="hso.plugins.jsimple.requiredLibraries"/>
+	</extension>
+
+</plugin>
