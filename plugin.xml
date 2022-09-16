@@ -28,6 +28,9 @@
 					<instanceof value="org.eclipse.jdt.core.IPackageFragment" />
 					<instanceof value="org.eclipse.jdt.core.IPackageFragmentRoot" />
 					<instanceof value="org.eclipse.jdt.core.ICompilationUnit" />
+					<adapt type="org.eclipse.core.resources.IProject">
+						<test property="org.eclipse.core.resources.projectNature" value="org.eclipse.jdt.core.javanature" />
+					</adapt>
 				</or>
 			</enablement>
 		</commonWizard>

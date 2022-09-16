@@ -1,13 +1,21 @@
 package hso.plugins.jsimple.wizards;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -74,10 +82,13 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 	private void initialize() {
 		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection ssel) {
 			final Object obj = ssel.getFirstElement();
-			if (obj instanceof IContainer container) {
-				processSelection(container);
-			} else if (obj instanceof IResource resource) {
-				processSelection(resource);
+			if (obj instanceof IProject project) {
+				try {
+					if (project.hasNature(JavaCore.NATURE_ID)) {
+						processSelection(JavaCore.create(project));
+					}
+				} catch (CoreException e) {
+				}
 			} else if (obj instanceof IPackageFragmentRoot packageFragmentRoot) {
 				processSelection(packageFragmentRoot);
 			} else if (obj instanceof IPackageFragment packageFragment) {
@@ -111,20 +122,47 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 		javaProject = packageFragmentRoot.getJavaProject();
 	}
 	
-	private void processSelection(IPackageFragment packageFragment) {
+	private void processSelection(IJavaProject javaProject) {
 		try {
-			IResource resource = packageFragment.getUnderlyingResource();
-			processSelection(resource);
+			List<IPackageFragmentRoot> packageFragmentRoots = Arrays.stream(javaProject.getPackageFragmentRoots()).filter(pfr -> {
+				try {
+					return pfr.getUnderlyingResource() != null;
+				} catch (JavaModelException e) {
+					return false;
+				}
+			}).collect(Collectors.toList());
+			
+			if (packageFragmentRoots.size() > 0) {
+				processSelection(packageFragmentRoots.get(0));
+			}
 		} catch (JavaModelException e) {
 		}
-		parentPackage = packageFragment.getElementName();
-		javaProject = packageFragment.getJavaProject();
+	}
+	
+	private void processSelection(IPackageFragment packageFragment) {
+		IJavaElement parent = packageFragment.getParent();
+		do {
+			if (parent instanceof IPackageFragmentRoot packageFragmentRoot) {
+				processSelection(packageFragmentRoot);
+				return;
+			}
+			parent = parent.getParent();
+		} while (parent != null);
+		
+		processSelection(packageFragment.getJavaProject());
 	}
 	
 	private void processSelection(ICompilationUnit compilationUnit) {
-		if (compilationUnit.getParent() instanceof IPackageFragment packageFragment) {
-			processSelection(packageFragment);
-		}
+		IJavaElement parent = compilationUnit.getParent();
+		do {
+			if (parent instanceof IPackageFragmentRoot packageFragmentRoot) {
+				processSelection(packageFragmentRoot);
+				return;
+			}
+			parent = parent.getParent();
+		} while (parent != null);
+		
+		processSelection(compilationUnit.getJavaProject());
 	}
 	
 	private static boolean isValidJavaIdentifier(String id) {
