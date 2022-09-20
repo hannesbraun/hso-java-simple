@@ -14,7 +14,7 @@ public class JSimpleClasspathContainerInitializer extends ClasspathContainerInit
 	@Override
 	public void initialize(IPath containerPath, IJavaProject javaProject) throws CoreException {
 		IProject project = javaProject.getProject();
-		if (project.exists() && project.isOpen()) {
+		if (containerPath.equals(JSimpleClasspathContainer.CONTAINER_ID) && project.exists() && project.isOpen()) {
 			JavaCore.setClasspathContainer(
 					JSimpleClasspathContainer.CONTAINER_ID,
 					new IJavaProject[] {javaProject},

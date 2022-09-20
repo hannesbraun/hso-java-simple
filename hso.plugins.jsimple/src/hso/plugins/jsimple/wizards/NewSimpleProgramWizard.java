@@ -13,6 +13,7 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
 import java.io.*;
@@ -89,7 +90,7 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 		monitor.beginTask("Creating simple program " + programName, 4);
 		
 		// Add hso library to classpath
-		// modifyClasspath(javaProject, monitor);
+		modifyClasspath(javaProject, monitor);
 		monitor.worked(1);
 		
 		// Get container
@@ -143,15 +144,15 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 			IClasspathEntry[] oldClasspath = javaProject.getRawClasspath();
 			boolean libFound = false;
 			for (IClasspathEntry entry : oldClasspath) {
-				if (entry.getPath().equals(JSimpleClasspathContainer.CONTAINER_ID)) { // TODO modify criteria if I change my mind
+				if (entry.getPath().equals(JSimpleClasspathContainer.CONTAINER_ID)) {
 					libFound = true;
 				}
 			}
 			if (!libFound) {
 				IClasspathEntry[] newClasspath = new IClasspathEntry[oldClasspath.length + 1];
 				System.arraycopy(oldClasspath, 0, newClasspath, 0, oldClasspath.length);
-				newClasspath[newClasspath.length - 1] = javaProject.getClasspathEntryFor(JSimpleClasspathContainer.CONTAINER_ID);
-				javaProject.setRawClasspath(newClasspath, true, monitor);	
+				newClasspath[newClasspath.length - 1] = JavaCore.newContainerEntry(JSimpleClasspathContainer.CONTAINER_ID);
+				javaProject.setRawClasspath(newClasspath, true, monitor);
 			}
 		} catch (JavaModelException e) {
 		}
