@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/hso.features.jsimple_1.0.0.jar" id="hso.features.jsimple" version="1.0.0">
+      <category name="hso.features"/>
+   </feature>
+   <category-def name="hso.features" label="Hochschule Offenburg"/>
+</site>

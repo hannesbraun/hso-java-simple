@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="hso.features.jsimple"
+      label="JavaSimple (Hochschule Offenburg)"
+      version="1.0.0"
+      provider-name="Hochschule Offenburg">
+
+   <license url="">
+      Copyright (c) 2022, Stefan Wehr &amp; Hannes Braun
+All rights reserved.
+   </license>
+
+   <plugin
+         id="hso.jsimple"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="hso.plugins.jsimple"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
