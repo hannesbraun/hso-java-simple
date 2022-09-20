@@ -82,7 +82,9 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 	private void initialize() {
 		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection ssel) {
 			final Object obj = ssel.getFirstElement();
-			if (obj instanceof IProject project) {
+			if (obj instanceof IJavaProject javaProject) {
+				processSelection(javaProject);
+			} else if (obj instanceof IProject project) {
 				try {
 					if (project.hasNature(JavaCore.NATURE_ID)) {
 						processSelection(JavaCore.create(project));
