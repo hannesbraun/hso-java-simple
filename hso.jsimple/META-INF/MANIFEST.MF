@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JSimple library
+Bundle-SymbolicName: hso.jsimple
+Bundle-Version: 1.0.0
+Automatic-Module-Name: hso.jsimple
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-Vendor: Hochschule Offenburg
+Export-Package: hso

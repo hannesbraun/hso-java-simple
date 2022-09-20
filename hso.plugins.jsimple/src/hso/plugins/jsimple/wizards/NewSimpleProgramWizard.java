@@ -13,16 +13,13 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.ClasspathEntry;
 
 import java.io.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 
-import hso.plugins.jsimple.JSimpleClasspathContainerInitializer;
+import hso.plugins.jsimple.JSimpleClasspathContainer;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -146,14 +143,14 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 			IClasspathEntry[] oldClasspath = javaProject.getRawClasspath();
 			boolean libFound = false;
 			for (IClasspathEntry entry : oldClasspath) {
-				if (entry.getPath().lastSegment().startsWith("libhso-")) { // TODO modify criteria if I change my mind
+				if (entry.getPath().equals(JSimpleClasspathContainer.CONTAINER_ID)) { // TODO modify criteria if I change my mind
 					libFound = true;
 				}
 			}
 			if (!libFound) {
 				IClasspathEntry[] newClasspath = new IClasspathEntry[oldClasspath.length + 1];
 				System.arraycopy(oldClasspath, 0, newClasspath, 0, oldClasspath.length);
-				//newClasspath[newClasspath.length - 1] = javaProject.getClasspathEntryFor(JSimpleClasspathContainerInitializer.CONTAINER_ID);
+				newClasspath[newClasspath.length - 1] = javaProject.getClasspathEntryFor(JSimpleClasspathContainer.CONTAINER_ID);
 				javaProject.setRawClasspath(newClasspath, true, monitor);	
 			}
 		} catch (JavaModelException e) {
