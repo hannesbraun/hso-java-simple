@@ -17,7 +17,7 @@ public class JSimpleClasspathContainer implements IClasspathContainer {
 
 	@Override
 	public String getDescription() {
-		return "JSimple library";
+		return "JSimple Library";
 	}
 
 	@Override
