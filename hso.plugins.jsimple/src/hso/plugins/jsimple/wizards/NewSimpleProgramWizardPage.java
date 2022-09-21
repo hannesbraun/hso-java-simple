@@ -28,9 +28,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * The "New" wizard page allows setting the container for the new file as well
- * as the file name. The page will only accept file name without the extension
- * OR with the extension that matches the expected one (mpe).
+ * The "New" wizard page allows setting the program name.
+ * The page will only accept valid Java identifiers.
  */
 
 public class NewSimpleProgramWizardPage extends WizardPage {
@@ -45,9 +44,9 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 	private ISelection selection;
 
 	/**
-	 * Constructor for SampleNewWizardPage.
+	 * Constructor for NewSimpleProgramWizardPage.
 	 * 
-	 * @param pageName
+	 * @param selection the current workbench selection
 	 */
 	public NewSimpleProgramWizardPage(ISelection selection) {
 		super("wizardPage");
@@ -77,8 +76,8 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 
 	/**
 	 * Tests if the current workbench selection is a suitable container to use.
+	 * If so, the container path will be set.
 	 */
-
 	private void initialize() {
 		if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection ssel) {
 			final Object obj = ssel.getFirstElement();
@@ -166,7 +165,12 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 		
 		processSelection(compilationUnit.getJavaProject());
 	}
-	
+
+	/**
+	 * Checks if the given id is a valid Java identifier.
+	 * @param id the string to check
+	 * @return true if valid, false otherwise
+	 */
 	private static boolean isValidJavaIdentifier(String id) {
 		if (id == null || id.isBlank()) {
 			return false;
@@ -175,13 +179,12 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 			return false;
 		}
 		return id.chars().skip(1).allMatch(c -> Character.isJavaIdentifierPart(c));
-		
 	}
 
 	/**
-	 * Ensures that both text fields are set.
+	 * Ensures that both the program path (path where to save the package) 
+	 * and the program name are valid.
 	 */
-
 	private void dialogChanged() {
 		IResource container = ResourcesPlugin.getWorkspace().getRoot()
 				.findMember(new Path(getContainerName()));

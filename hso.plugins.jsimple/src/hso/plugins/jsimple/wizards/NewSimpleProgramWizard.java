@@ -23,16 +23,14 @@ import org.eclipse.ui.ide.IDE;
 import hso.plugins.jsimple.JSimpleClasspathContainer;
 
 /**
- * This is a sample new wizard. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "mpe". If a sample multi-page editor (also available
- * as a template) is registered for the same extension, it will
- * be able to open it.
+ * This is a wizard to create a new "simple program". Its role is
+ * to create a new Java class residing in a new package.
+ * The new package will be created at the source root directory.
+ * The name for the package will be the supplied name with the first
+ * letter lowercased. The class gets the same name with the first letter
+ * uppercased and "Main" appended. The editor for the class will be opened
+ * automatically after creation.
  */
-
 public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 	private NewSimpleProgramWizardPage page;
 	private ISelection selection;
@@ -49,7 +47,7 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 	}
 
 	/**
-	 * This method is called when 'Finish' button is pressed in
+	 * This method is called when the 'Finish' button is pressed in
 	 * the wizard. We will create an operation and run it
 	 * using wizard as execution context.
 	 */
@@ -81,11 +79,10 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 	}
 	
 	/**
-	 * The worker method. It will find the container, create the
-	 * file if missing or just replace its contents, and open
-	 * the editor on the newly created file.
+	 * The worker method. It will add the JSimple library to the classpath,
+	 * create the package as well as the class, and open
+	 * the editor on the newly created class.
 	 */
-
 	private void doFinish(IJavaProject javaProject, String containerName, String parentPackage, String programName, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Creating simple program " + programName, 4);
 		
@@ -139,6 +136,9 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 		monitor.worked(1);
 	}
 	
+	/**
+	 * Adds the JSimple library to the classpath of the Java project in case it's not already added.
+	 */
 	private void modifyClasspath(IJavaProject javaProject, IProgressMonitor monitor) {
 		try {
 			IClasspathEntry[] oldClasspath = javaProject.getRawClasspath();
@@ -159,6 +159,9 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 		
 	}
 
+	/**
+	 * @return the input stream containing the source code of the generated Java class.
+	 */
 	private InputStream openContentStream(String parentPackage, String packageName, String className) {
 		StringBuilder contents = new StringBuilder();
 		contents.append("package ");
