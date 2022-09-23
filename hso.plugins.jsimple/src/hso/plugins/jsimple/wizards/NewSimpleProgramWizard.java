@@ -104,7 +104,9 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 		
 		// Create package
 		final IFolder simplePackage = container.getFolder(new Path(packageName));
-		if (!simplePackage.exists()) {
+		if (simplePackage.exists()) {
+			throw new CoreException(Status.error("Program \"" + programName + "\" already exists."));
+		} else {
 			simplePackage.create(true, true, monitor);
 		}
 		monitor.worked(1);
@@ -116,7 +118,7 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 			final InputStream stream = openContentStream(parentPackage, packageName, className);
 			if (file.exists()) {
 				// file.setContents(stream, true, true, monitor);
-				throw new CoreException(Status.error("File \"" + pathClassFile + ".java\" already exists."));
+				throw new CoreException(Status.error("File \"" + pathClassFile + "\" already exists."));
 			} else {
 				file.create(stream, true, monitor);
 			}

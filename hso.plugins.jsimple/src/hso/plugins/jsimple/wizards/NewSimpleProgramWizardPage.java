@@ -191,24 +191,24 @@ public class NewSimpleProgramWizardPage extends WizardPage {
 		final String fileName = getProgramName();
 
 		if (getContainerName().length() == 0) {
-			updateStatus("Program path is unkown");
+			updateStatus("Program path is unknown. Please select a source directory.");
 			return;
 		}
 		if (container == null
 				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updateStatus("File container must exist");
+			updateStatus("File container must exist.");
 			return;
 		}
 		if (!container.isAccessible()) {
-			updateStatus("Project must be writable");
+			updateStatus("Project must be writable.");
 			return;
 		}
 		if (fileName.length() == 0) {
-			updateStatus("Program name must be specified");
+			updateStatus("Program name must be specified.");
 			return;
 		}
 		if (!isValidJavaIdentifier(fileName)) {
-			updateStatus("Program name is not a valid java identifier");
+			updateStatus("Program name is not a valid java identifier.");
 			return;
 		}
 		updateStatus(null);
