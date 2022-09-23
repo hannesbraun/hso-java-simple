@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import java.io.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 
 import hso.plugins.jsimple.JSimpleClasspathContainer;
 
@@ -84,7 +85,7 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 	 * the editor on the newly created class.
 	 */
 	private void doFinish(IJavaProject javaProject, String containerName, String parentPackage, String programName, IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Creating simple program " + programName, 4);
+		monitor.beginTask("Creating simple program " + programName, 5);
 		
 		// Add hso library to classpath
 		modifyClasspath(javaProject, monitor);
@@ -129,13 +130,19 @@ public class NewSimpleProgramWizard extends Wizard implements INewWizard {
 		monitor.worked(1);
 		
 		getShell().getDisplay().asyncExec(() -> {
-			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			
+			// Select class
+			BasicNewResourceWizard.selectAndReveal(file, activeWorkbenchWindow);
+
+			// Open editor
+			IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
 			try {
 				IDE.openEditor(page, file, true);
 			} catch (PartInitException e) {
 			}
 		});
-		monitor.worked(1);
+		monitor.worked(2);
 	}
 	
 	/**
