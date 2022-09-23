@@ -5,6 +5,10 @@
       version="1.0.0"
       provider-name="Hochschule Offenburg">
 
+   <copyright>
+      Copyright (c) 2022, Stefan Wehr &amp; Hannes Braun
+   </copyright>
+
    <license url="">
       BSD 3-Clause License
 
