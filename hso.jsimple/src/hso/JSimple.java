@@ -4,6 +4,20 @@ import java.util.*;
 
 public class JSimple {
 
+    /* Mathematical functions */
+    public static int round(double x) {
+        return (int)Math.round(x);
+    }
+    
+    public static int floor(double x) {
+        return (int)Math.floor(x);
+    }
+    
+    public static int ceil(double x) {
+        return (int)Math.ceil(x);
+    }
+    
+    /* TODOs */
     public static TodoException todo(String msg) {
         return new TodoException(msg);
     }
