@@ -97,6 +97,14 @@ public class JSimple {
         System.out.flush();
     }
 	
+	public static int getFailTestCount() {
+	    return failCount;
+	}
+	
+	   public static int getOkTestCount() {
+	        return okCount;
+	    }
+	
 	private static void shutdownHook() {
         System.out.flush();
         int total = okCount + failCount;
