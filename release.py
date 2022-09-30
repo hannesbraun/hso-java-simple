@@ -4,6 +4,7 @@ from shell import *
 import re
 import sys
 import argparse
+import getpass
 
 defaultTargetDir = f'{HOME}/Documents/homepage/external/eclipse/java-simple'
 defaultCertName = 'stefan wehr'
@@ -58,9 +59,10 @@ print('Now restart eclipse, open the project in eclipse, goto hso.updateSite/sit
 print('and hit "Build All" (under "Site Map")')
 input('Hit ENTER to continue ')
 
-def signJar(f):
+def signJar(f, secret):
     print(f'Signing {f} ...')
-    run(f'jarsigner -provider apple.security.AppleProvider -storetype KeychainStore -keystore NONE {f} "{certName}"')
+    run(f'jarsigner -provider apple.security.AppleProvider -storetype KeychainStore -keystore NONE {f} "{certName}"',
+        input=secret)
 
 outputFiles = [f'plugins/hso.plugins.jsimple_{version}.jar',
                f'plugins/hso.jsimple_{version}.jar',
@@ -72,10 +74,12 @@ outputFiles = [f'plugins/hso.plugins.jsimple_{version}.jar',
 if isDir(targetDir):
     rmdir(targetDir, recursive=True)
 
+secret = getpass.getpass('Password for keychain: ')
+
 with workingDir('hso.updateSite'):
     for f in outputFiles:
         if getExt(f) == '.jar':
-            signJar(f)
+            signJar(f, secret)
         d = dirname(f)
         mkdir(pjoin(targetDir, d), createParents=True)
         cp(f, pjoin(targetDir, f))
