@@ -10,7 +10,7 @@ import hso.JSimple;
 import hso.TodoException;
 
 record JSimpleCmdlineArgs(boolean todoOk, String srcFile) {}
-record JSimpleTestResult(int ok, int fail, int total, boolean foundUnexpectedTodo) {}
+record JSimpleTestResult(int ok, int fail, int total, boolean foundTodo) {}
 
 public class JSimpleTestRunner {
 
@@ -98,8 +98,8 @@ public class JSimpleTestRunner {
         }
     }
     
-    // Returns true if an unexpected TodoException is thrown by the test
-    private static boolean runTests(String clsName, boolean todoOk) {
+    // Returns true if an  TodoException is thrown by the test
+    private static boolean runTests(String clsName) {
         Class<?> cls = null;
         try {
             cls = Class.forName(clsName);
@@ -112,15 +112,14 @@ public class JSimpleTestRunner {
         } catch(NoSuchMethodException e) {
             return false; // that's ok
         }
+        meth.setAccessible(true);
         String[] params = new String[0];
         try {
             meth.invoke(null, (Object) params);
         } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
             if (cause instanceof TodoException todoExc) {
-                if (!todoOk) {
-                    return true;
-                }                
+                return true;               
             } else {
                 abort("main-method of C2 failed with exception " + 
                         cause.getClass().getName() + ": " + cause);
@@ -135,7 +134,7 @@ public class JSimpleTestRunner {
         List<String> classes = findClasses(args.srcFile());
         boolean foundTodo = false;
         for (String clsName : classes) {
-            if (runTests(clsName, args.todoOk())) {
+            if (runTests(clsName)) {
                 foundTodo = true;
             }
         }
@@ -147,9 +146,16 @@ public class JSimpleTestRunner {
     public static void main(String[] argArray) {
         JSimpleCmdlineArgs args = parse(argArray);
         JSimpleTestResult result = runAllTests(args);
+        System.out.println(result);
+        if (result.foundTodo()) {
+            if (!args.todoOk()) {
+                abort("Found unexpected TodoException");
+            }
+        }
         if (result.total() == 0) {
-            System.out.println("No tests found!");
-            System.exit(1);
+            if (!result.foundTodo()) {
+                System.out.println("No tests found!");
+            }
         } else if (result.fail() == 0) {
             System.out.println("All tests ok");
             System.exit(0);
