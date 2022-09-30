@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaSimple (Hochschule Offenburg)
 Bundle-SymbolicName: hso.plugins.jsimple;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.1.2
 Bundle-Vendor: Hochschule Offenburg
 Require-Bundle: hso.jsimple,
  org.eclipse.core.resources,
