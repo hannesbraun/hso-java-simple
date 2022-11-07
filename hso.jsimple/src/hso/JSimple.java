@@ -2,6 +2,8 @@ package hso;
 
 import java.util.*;
 
+import hso.jsimple.ReflectionHelper;
+
 public class JSimple {
 
     /* Mathematical functions */
@@ -29,6 +31,19 @@ public class JSimple {
         }
         String methodName = entry.getMethodName();
         return new TodoException("TODO in method " + methodName + getFormattedLocation(entry));
+    }
+    
+    public static ImpossibleException impossible(String msg) {
+        return new ImpossibleException(msg);
+    }
+    
+    public static ImpossibleException impossible() {
+        StackTraceElement entry = getStackTraceElement();
+        if (entry == null) {
+            return impossible("impossible");
+        }
+        String methodName = entry.getMethodName();
+        return new ImpossibleException("The impossible happened in method " + methodName + getFormattedLocation(entry));
     }
     
     /* TESTS */
@@ -101,10 +116,16 @@ public class JSimple {
 	    return failCount;
 	}
 	
-	   public static int getOkTestCount() {
-	        return okCount;
-	    }
-	
+   public static int getOkTestCount() {
+        return okCount;
+    }
+   
+   // for tests
+   public static void resetTestCounts() {
+       failCount = 0;
+       okCount = 0;
+   }
+
 	private static void shutdownHook() {
         System.out.flush();
         int total = okCount + failCount;
@@ -118,218 +139,28 @@ public class JSimple {
             }
         }
 	}
-    
-	public static void check(double given, double expected) {
-		if (Math.abs(given - expected) >= EPSILON) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + expected + " as expected.");
-		}
-	}
-	
-	public static void check(float given, float expected) {
-		if (Math.abs(given - expected) >= EPSILON) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + expected + " as expected.");
-		}
-	}
-	
-	public static void check(long given, long expected) {
-		if (given != expected) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + given + " as expected.");
-		}
-	}	
-	
-	public static void check(int given, int expected) {
-		if (given != expected) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + given + " as expected.");
-		}
-	}		
-	
-	public static void check(short given, short expected) {
-		if (given != expected) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + given + " as expected.");
-		}
-	}
-	
-	public static void check(byte given, byte expected) {
-		if (given != expected) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + given + " as expected.");
-		}
-	}
-	
-	public static void check(char given, char expected) {
-		if (given != expected) {
-			testFail("Given '" + given + "' but expected '" + expected + "'");
-		} else {
-			testOk("Given '" + given + "' as expected.");
-		}
-	}
-	
-	public static void check(boolean given, boolean expected) {
-		if (given != expected) {
-			testFail("Given " + given + " but expected " + expected + ".");
-		} else {
-			testOk("Given " + given + " as expected.");
-		}
-	}
-	
-	public static void check(Object[] given, Object[] expected) {
-		if (!Arrays.deepEquals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.deepToString(given) + 
-				"\nbut expected\n    " + Arrays.deepToString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.deepToString(given) + " as expected.");
-		}	
-	}
-	
-	
-	public static void check(double[] given, double[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-	
-	public static void check(float[] given, float[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-
-	
-	public static void check(long[] given, long[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}	
-	
-	public static void check(int[] given, int[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}	
-	
-	public static void check(short[] given, short[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-	
-	public static void check(byte[] given, byte[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-	
-	public static void check(char[] given, char[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-	
-	public static void check(boolean[] given, boolean[] expected) {
-		if (!Arrays.equals(given, expected)) {
-			testFail(
-				"\nGiven\n    " + Arrays.toString(given) + 
-				"\nbut expected\n    " + Arrays.toString(expected)
-			);
-		} else {
-			testOk("Given " + Arrays.toString(given) + " as expected.");
-		}	
-	}
-	
-	public static boolean objectEquals(Object o1, Object o2) {
-		if (o1 == o2) {
-			return true;
-		} else if (o1 == null || o2 == null) {
-			return false;
-		} else {
-			return o1.equals(o2);
-		}
-	}
-	
-	public static void check(String given, String expected) {
-		if (!objectEquals(given, expected)) {
-			testFail("\nGiven\n    \"" + given + "\"\nbut expected\n    \"" + expected + "\".");
-		} else {
-			testOk("Given \"" + given + "\" as expected.");
-		}
-	}	
 		
+	private static String toString(Object x) {
+	    if (x instanceof String s) {
+	        return "\"" + s + "\"";
+	    } else {
+	        return ReflectionHelper.genericToString(x);
+	    }
+	}
+	
     public static void check(Object given, Object expected) {
-		if (given instanceof String && expected instanceof String) {
-			check((String)given, (String)expected);
-		} else if (given instanceof Object[] && expected instanceof Object[]) {
-			check((Object[])given, (Object[])expected);
-		} else if (given instanceof double[] && expected instanceof double[]) {
-			check((double[])given, (double[])expected);
-		} else if (given instanceof float[] && expected instanceof float[]) {
-			check((float[])given, (float[])expected);
-		} else if (given instanceof long[] && expected instanceof long[]) {
-			check((long[])given, (long[])expected);
-		} else if (given instanceof int[] && expected instanceof int[]) {
-			check((int[])given, (int[])expected);
-		} else if (given instanceof short[] && expected instanceof short[]) {
-			check((short[])given, (short[])expected);
-		} else if (given instanceof byte[] && expected instanceof byte[]) {
-			check((byte[])given, (byte[])expected);		
-		} else if (given instanceof char[] && expected instanceof char[]) {
-			check((char[])given, (char[])expected);		
-		} else if (given instanceof boolean[] && expected instanceof boolean[]) {
-			check((boolean[])given, (boolean[])expected);					
-		} else {
-			if (!objectEquals(given, expected)) {
-				testFail("Given " + given + " but expected " + expected + ".");
-			} else {
-				testOk("Given " + given + " as expected.");
-			}
-		}
+        boolean eq = ReflectionHelper.genericEquality(given, expected);
+        String givenStr = toString(given);
+        if (!eq) {
+            String expectedStr = toString(expected);
+            if (givenStr.length() + expectedStr.length() <= 60) {
+                testFail("Given " + givenStr + " but expected " + expectedStr + ".");
+            } else {
+                testFail("Given\n" + givenStr + "\nbut expected\n" + expectedStr);
+            }
+        } else {
+            testOk("Given " + givenStr + " as expected.");
+        }
 	}	
 	
 	/* AUXILIARIES for Lists */
