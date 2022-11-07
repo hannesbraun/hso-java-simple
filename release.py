@@ -13,13 +13,15 @@ defaultSyncCmd = f'cd {HOME}/Documents/homepage && make sync'
 def parseArgs():
     parser = argparse.ArgumentParser(description='Script for creating a release')
     parser.add_argument('--target-dir', metavar='DIR', type=str,
-                        help='Target directory (ATTENTION: will be erased)',
+                        help=f'Target directory, default: {defaultTargetDir} (ATTENTION: will be erased)',
                         default=defaultTargetDir)
     parser.add_argument('--version', metavar='V', type=str, help='Version number for the release')
     parser.add_argument('--cert', metavar='NAME', type=str,
-                        help='Name of certificate for signing jars', default=defaultCertName)
+                        help=f'Name of certificate for signing jars, default: {defaultCertName}',
+                        default=defaultCertName)
     parser.add_argument('--sync', metavar='CMD', type=str,
-                        help='Command for syncing to webspace', default=defaultSyncCmd)
+                        help=f'Command for syncing to webspace, default: {defaultSyncCmd}',
+                        default=defaultSyncCmd)
     return parser.parse_args()
 
 args = parseArgs()
