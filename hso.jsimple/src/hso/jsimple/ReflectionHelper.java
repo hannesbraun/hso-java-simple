@@ -242,6 +242,37 @@ public class ReflectionHelper {
         return genericEquality(obj1, new RecursionGuard(obj1), obj2, new RecursionGuard(obj2));
     }
     
+    private static Long asLong(Object obj) {
+        if (obj instanceof Long l) {
+            return l;
+        } else if (obj instanceof Integer i) {
+            return i.longValue();
+        } else if (obj instanceof Short s) {
+            return s.longValue();
+        } else if (obj instanceof Byte b) {
+            return b.longValue();
+        } else if (obj instanceof Character c) {
+            return (long)c.charValue();
+        } else {
+            return null;
+        }
+    }
+    
+    private static Double asDouble(Object obj) {
+        if (obj instanceof Double d) {
+            return d;
+        } else if (obj instanceof Float f) {
+            return f.doubleValue();
+        } else {
+            Long l = asLong(obj);
+            if (l != null) {
+                return l.doubleValue();
+            } else {
+                return null;
+            }
+        }
+    }
+    
     private static double EPSILON = 0.0000001;
     
     private static boolean genericEquality(Object obj1, RecursionGuard g1, Object obj2, RecursionGuard g2) {
@@ -251,17 +282,15 @@ public class ReflectionHelper {
         if (obj1 == null || obj2 == null) {
             return false;
         }
-        if (obj1 instanceof Double d1) {
-            if (obj2 instanceof Double d2) {
-                return Math.abs(d1 - d2) <= EPSILON;
-            } else if (obj2 instanceof Float f2) {
-                return Math.abs(d1 - f2) <= EPSILON;
-            }
+        Long l1 = asLong(obj1);
+        Long l2 = asLong(obj2);
+        if (l1 != null && l2 != null) {
+            return l1.equals(l2);
         }
-        if (obj2 instanceof Double d2) {
-            if (obj1 instanceof Float f1) {
-                return Math.abs(f1 - d2) <= EPSILON;
-            }
+        Double d1 = asDouble(obj1);
+        Double d2 = asDouble(obj2);
+        if (d1 != null && d2 != null) {
+            return Math.abs(d1 - d2) <= EPSILON;
         }
         if (declaresMethod(obj1, "equals", Object.class)) {
             return obj1.equals(obj2);

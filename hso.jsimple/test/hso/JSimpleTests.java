@@ -97,6 +97,120 @@ class JSimpleTests {
         assertOk(() -> JSimple.check(3.14f, 3.14f));
         assertFail(() -> JSimple.check(3.14f, 3.15f));
     }
+    
+    @Test
+    void testCheckPrimMixed() {
+        // long/int
+        assertOk(() -> JSimple.check(1L, 1));
+        assertFail(() -> JSimple.check(1L, 2));
+        assertOk(() -> JSimple.check(1, 1L));
+        assertFail(() -> JSimple.check(1, 2L));
+        // long/short
+        assertOk(() -> JSimple.check(1L, (short)1));
+        assertFail(() -> JSimple.check(1L, (short)2));
+        assertOk(() -> JSimple.check((short)1, 1L));
+        assertFail(() -> JSimple.check((short)1, 2L));
+        // long/byte
+        assertOk(() -> JSimple.check(1L, (byte)1));
+        assertFail(() -> JSimple.check(1L, (byte)2));
+        assertOk(() -> JSimple.check((byte)1, 1L));
+        assertFail(() -> JSimple.check((byte)1, 2L));    
+        // long/char
+        assertOk(() -> JSimple.check(97L, 'a'));
+        assertFail(() -> JSimple.check(97L, 'b'));
+        assertOk(() -> JSimple.check('a', 97L));
+        assertFail(() -> JSimple.check('b', 97L));   
+        // long/float
+        assertOk(() -> JSimple.check(1L, 1.0f));
+        assertFail(() -> JSimple.check(1L, 2.0f));
+        assertOk(() -> JSimple.check(1.0f, 1L));
+        assertFail(() -> JSimple.check(1.0f, 2L));
+        // long/double
+        assertOk(() -> JSimple.check(1L, 1.0));
+        assertFail(() -> JSimple.check(1L, 2.0));
+        assertOk(() -> JSimple.check(1.0, 1L));
+        assertFail(() -> JSimple.check(1.0, 2L));    
+        
+        // int/short
+        assertOk(() -> JSimple.check(1, (short)1));
+        assertFail(() -> JSimple.check(1, (short)2));
+        assertOk(() -> JSimple.check((short)1, 1));
+        assertFail(() -> JSimple.check((short)1, 2));
+        // int/byte
+        assertOk(() -> JSimple.check(1, (byte)1));
+        assertFail(() -> JSimple.check(1, (byte)2));
+        assertOk(() -> JSimple.check((byte)1, 1));
+        assertFail(() -> JSimple.check((byte)1, 2));    
+        // int/char
+        assertOk(() -> JSimple.check(97, 'a'));
+        assertFail(() -> JSimple.check(97, 'b'));
+        assertOk(() -> JSimple.check('a', 97));
+        assertFail(() -> JSimple.check('b', 97));   
+        // int/float
+        assertOk(() -> JSimple.check(1, 1.0f));
+        assertFail(() -> JSimple.check(1, 2.0f));
+        assertOk(() -> JSimple.check(1.0f, 1));
+        assertFail(() -> JSimple.check(1.0f, 2));
+        // int/double
+        assertOk(() -> JSimple.check(1, 1.0));
+        assertFail(() -> JSimple.check(1, 2.0));
+        assertOk(() -> JSimple.check(1.0, 1));
+        assertFail(() -> JSimple.check(1.0, 2));  
+        
+        // short/byte
+        assertOk(() -> JSimple.check((short)1, (byte)1));
+        assertFail(() -> JSimple.check((short)1, (byte)2));
+        assertOk(() -> JSimple.check((byte)1, (short)1));
+        assertFail(() -> JSimple.check((byte)1, (short)2));    
+        // short/char
+        assertOk(() -> JSimple.check((short)97, 'a'));
+        assertFail(() -> JSimple.check((short)97, 'b'));
+        assertOk(() -> JSimple.check('a', (short)97));
+        assertFail(() -> JSimple.check('b', (short)97));   
+        // short/float
+        assertOk(() -> JSimple.check((short)1, 1.0f));
+        assertFail(() -> JSimple.check((short)1, 2.0f));
+        assertOk(() -> JSimple.check(1.0f, (short)1));
+        assertFail(() -> JSimple.check(1.0f, (short)2));
+        // short/double
+        assertOk(() -> JSimple.check((short)1, 1.0));
+        assertFail(() -> JSimple.check((short)1, 2.0));
+        assertOk(() -> JSimple.check(1.0, (short)1));
+        assertFail(() -> JSimple.check(1.0, (short)2));        
+        
+        // byte/char
+        assertOk(() -> JSimple.check((byte)97, 'a'));
+        assertFail(() -> JSimple.check((byte)97, 'b'));
+        assertOk(() -> JSimple.check('a', (byte)97));
+        assertFail(() -> JSimple.check('b', (byte)97));   
+        // byte/float
+        assertOk(() -> JSimple.check((byte)1, 1.0f));
+        assertFail(() -> JSimple.check((byte)1, 2.0f));
+        assertOk(() -> JSimple.check(1.0f, (byte)1));
+        assertFail(() -> JSimple.check(1.0f, (byte)2));
+        // byte/double
+        assertOk(() -> JSimple.check((byte)1, 1.0));
+        assertFail(() -> JSimple.check((byte)1, 2.0));
+        assertOk(() -> JSimple.check(1.0, (byte)1));
+        assertFail(() -> JSimple.check(1.0, (byte)2));  
+        
+        // char/float
+        assertOk(() -> JSimple.check('a', 97.0f));
+        assertFail(() -> JSimple.check('a', 2.0f));
+        assertOk(() -> JSimple.check(97.0f, 'a'));
+        assertFail(() -> JSimple.check(98.0f, 'a'));
+        // char/double
+        assertOk(() -> JSimple.check('a', 97.0));
+        assertFail(() -> JSimple.check('a', 2.0));
+        assertOk(() -> JSimple.check(97.0, 'a'));
+        assertFail(() -> JSimple.check(98.0, 'a'));   
+        
+        // float/double
+        assertOk(() -> JSimple.check(97.0f, 97.0));
+        assertFail(() -> JSimple.check(1.0f, 2.0));
+        assertOk(() -> JSimple.check(97.0, 97.0f));
+        assertFail(() -> JSimple.check(98.0, 2.0f));           
+    }
      
     @Test
     void testCheckObj() {
