@@ -45,6 +45,11 @@ re2 = re.compile(r"""<feature[^>]*version\s*=\s*["'](?P<V>[.0-9]+)["']""")
 re3 = re.compile(r"Bundle-Version:\s*(?P<V>[.0-9]+)")
 res = [re1, re2, re3]
 
+oldVersion = run("""grep '<feature.*version=' /Users/swehr/Documents/homepage/external/eclipse/java-simple/site.xml | sed 's/.*version="//g' | sed 's/".*//g'""", captureStdout=True).stdout.strip()
+print(f'Old version: {oldVersion}')
+print(f'New version: {version}')
+input('Hit ENTER to continue ')
+
 for f in versionFiles:
     content = open(f).read()
     idxs = [] # list of pairs (start, end)
@@ -59,7 +64,7 @@ for f in versionFiles:
 
 print('Now restart eclipse, open the project in eclipse, goto hso.updateSite/site.xml,')
 print('and hit "Build All" (under "Site Map")')
-input('Hit ENTER to continue ')
+input('Hit ENTER when build has finished')
 
 def signJar(f, secret):
     print(f'Signing {f} ...')
