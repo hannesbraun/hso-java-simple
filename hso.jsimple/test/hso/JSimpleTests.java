@@ -3,6 +3,7 @@ package hso;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import java.util.*;
 
 @FunctionalInterface
 interface Action {
@@ -294,5 +295,24 @@ class JSimpleTests {
         // Custom class, without equals (structural equality)
         assertOk(() -> JSimple.check(new A[][] {{new A(1, new B("foo"))}}, new A[][] {{new A(1, new B("foo"))}}));
         assertFail(() -> JSimple.check(new A[][] {{new A(1, new B("foo"))}}, new A[][] {{new A(1, new B("foox"))}}));
+    }
+    
+    @Test
+    void testCheckLists1() {
+        List<String> l1 = JSimple.makeList("Hans", "Günther");
+        List<String> l2 = JSimple.makeList("Hans", "Günther");
+        assertOk(() -> JSimple.check(l1, l2));
+        l2.add("Egon");
+        assertFail(() -> JSimple.check(l1, l2));
+    }
+    
+    @Test
+    void testCheckLists2() {
+        List<B> l1 = JSimple.makeList(new B("Hans"));
+        List<B> l2 = JSimple.makeList(new B("Hans"));
+        assertOk(() -> JSimple.check(l1, l2));
+        l2.remove(0);
+        l2.add(new B("Egon"));
+        assertFail(() -> JSimple.check(l1, l2));
     }
 }

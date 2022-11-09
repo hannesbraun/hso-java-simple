@@ -275,6 +275,27 @@ public class ReflectionHelper {
     
     private static double EPSILON = 0.0000001;
     
+    @SuppressWarnings("rawtypes")
+    private static boolean genericListEquality(List lst1, RecursionGuard g1, List lst2, RecursionGuard g2) {
+        int n = lst1.size();
+        if (n != lst2.size()) {
+            return false;
+        }
+        for (int i = 0; i < n; i++) {
+            Object obj1 = lst1.get(i);
+            Object obj2 = lst2.get(i);
+            if (g1.checkRecursiveCall(obj1) && g2.checkRecursiveCall(obj2)) {
+                if (!genericEquality(obj1, g1, obj2, g2)) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    @SuppressWarnings("rawtypes")
     private static boolean genericEquality(Object obj1, RecursionGuard g1, Object obj2, RecursionGuard g2) {
         if (obj1 == obj2) {
             return true;
@@ -291,6 +312,9 @@ public class ReflectionHelper {
         Double d2 = asDouble(obj2);
         if (d1 != null && d2 != null) {
             return Math.abs(d1 - d2) <= EPSILON;
+        }
+        if (obj1 instanceof List lst1 && obj2 instanceof List lst2) {
+            return genericListEquality(lst1, g1, lst2, g2);
         }
         if (declaresMethod(obj1, "equals", Object.class)) {
             return obj1.equals(obj2);
