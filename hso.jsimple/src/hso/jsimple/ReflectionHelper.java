@@ -293,7 +293,7 @@ public class ReflectionHelper {
             }
         }
         return true;
-    }
+    } 
     
     @SuppressWarnings("rawtypes")
     private static boolean genericEquality(Object obj1, RecursionGuard g1, Object obj2, RecursionGuard g2) {

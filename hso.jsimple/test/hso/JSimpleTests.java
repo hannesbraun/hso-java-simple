@@ -315,4 +315,9 @@ class JSimpleTests {
         l2.add(new B("Egon"));
         assertFail(() -> JSimple.check(l1, l2));
     }
+    
+    @Test
+    void testCheckLists3() {
+        JSimple.check(JSimple.makeList(42 * 1.0, 42 * 2.0, 42 * 3.0), JSimple.makeList(42, 84, 126));
+    }
 }
