@@ -103,14 +103,21 @@ class ReflectionHelperTest {
         B[] bs1 = new B[] {b1, b2};
         B[] bs2 = new B[] {b1, b2};
         B[] bs3 = new B[] {b2, b1};  
+        B[] bs4 = new B[] {b1, b3};  
         assertEquals(true, ReflectionHelper.genericEquality(bs1, bs2));
-        assertEquals(false, ReflectionHelper.genericEquality(bs1, bs3));
+        assertEquals(true, ReflectionHelper.genericEquality(bs1, bs3));
+        assertEquals(false, ReflectionHelper.genericEquality(bs1, bs4));
+        B[] bs5 = new B[] {b1, b1};
+        B[] bs6 = new B[] {b2, b2};
+        assertEquals(true, ReflectionHelper.genericEquality(bs5, bs6));
         
         B[][] bss1 = new B[][] {bs1, bs2};
         B[][] bss2 = new B[][] {bs1, bs2};
         B[][] bss3 = new B[][] {bs2, bs1};
+        B[][] bss4 = new B[][] {bs1, bs4};
         assertEquals(true, ReflectionHelper.genericEquality(bss1, bss2));
-        assertEquals(false, ReflectionHelper.genericEquality(bss1, bss3));
+        assertEquals(true, ReflectionHelper.genericEquality(bss1, bss3));
+        assertEquals(false, ReflectionHelper.genericEquality(bss1, bss4));
     }
     
     @Test
@@ -118,7 +125,7 @@ class ReflectionHelperTest {
         B b1 = new B("foo", 42);
         B b2 = new B(null, 43);
         assertEquals("null", ReflectionHelper.genericToString(null));
-        assertEquals("B[f=42, g=foo]", ReflectionHelper.genericToString(b1));
+        assertEquals("B[f=42, g=\"foo\"]", ReflectionHelper.genericToString(b1));
         assertEquals("B[f=43, g=null]", ReflectionHelper.genericToString(b2));
         Node n1 = new Node(new Node(1), 2, new Node(3));
         n1.right = n1; // circular
@@ -126,10 +133,21 @@ class ReflectionHelperTest {
                 ReflectionHelper.genericToString(n1));
         
         B[] bs1 = new B[] {b1, b2};
-        assertEquals("[B[f=42, g=foo], B[f=43, g=null]]", ReflectionHelper.genericToString(bs1));
+        assertEquals("[B[f=42, g=\"foo\"], B[f=43, g=null]]", ReflectionHelper.genericToString(bs1));
         
         B[][] bss1 = new B[][] {bs1};
-        assertEquals("[[B[f=42, g=foo], B[f=43, g=null]]]", ReflectionHelper.genericToString(bss1));
+        assertEquals("[[B[f=42, g=\"foo\"], B[f=43, g=null]]]", ReflectionHelper.genericToString(bss1));
+        
+        List<String> l = new ArrayList<String>();
+        l.add("foo");
+        l.add(null);
+        l.add("");
+        l.add("");
+        l.add("\"hi\"\n\t\\");
+        String expected = """
+                            ["foo", null, "", "", "\\"hi\\"\\n\\t\\\\"]               
+                          """.strip();
+        assertEquals(expected, ReflectionHelper.genericToString(l));
     }
 
 }

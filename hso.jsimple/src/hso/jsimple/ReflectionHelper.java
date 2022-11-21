@@ -27,27 +27,29 @@ final class RecursionGuard {
     private int calls;
     private Set<SeenEntry> seen;
     private final int MAX_CALLS = 100;
-    RecursionGuard(Object obj) {
+    RecursionGuard() {
         this.calls = 0;
         this.seen = new HashSet<SeenEntry>();
-        if (obj != null) {
-            this.seen.add(new SeenEntry(obj));
-        }
     }
-    boolean checkRecursiveCall(Object arg) {
+    boolean checkRecursionLimit(Object arg) {
         if (this.calls + 1 > MAX_CALLS) {
-            return false;
+            return true;
         }
         if (arg == null) {
-            return true;
+            return false;
         }
         SeenEntry e = new SeenEntry(arg);
         if (this.seen.contains(e)) {
-            return false;
+            return true;
         }
         this.calls++;
         this.seen.add(e);
-        return true;
+        return false;
+    }
+    void remove(Object arg) {
+        SeenEntry e = new SeenEntry(arg);
+        this.seen.remove(e);
+        this.calls--;
     }
 }
 
@@ -177,7 +179,7 @@ public class ReflectionHelper {
     }
     
     public static String genericToString(Object obj) {
-        return genericToString(obj, new RecursionGuard(obj));
+        return genericToString(obj, new RecursionGuard());
     }
     
     private static String genericArrayToString(Object obj, RecursionGuard g) {
@@ -194,11 +196,49 @@ public class ReflectionHelper {
         return sb.toString();
     }
     
+    private static String escapeString(String s) {
+        s = s.replace("\\", "\\\\");
+        s = s.replace("\"", "\\\"");
+        s = s.replace("\t", "\\t");
+        s = s.replace("\b", "\\b");
+        s = s.replace("\n", "\\n");
+        s = s.replace("\r", "\\r");
+        s = s.replace("\f", "\\f");
+        return s;
+    }
+    
     public static String genericToString(Object obj, RecursionGuard g) {
+        if (g.checkRecursionLimit(obj)) {
+            return "<circular>";
+        }
+        String s = genericToStringUnchecked(obj, g);
+        g.remove(obj);
+        return s;
+    }
+    @SuppressWarnings("rawtypes")
+    public static String genericToStringUnchecked(Object obj, RecursionGuard g) {
         if (obj == null) {
             return "null";
         }
         Class<?> cls = obj.getClass();
+        if (cls.equals(String.class)) {
+            String s = (String)obj;
+            String quote = "\"";
+            return quote + escapeString(s) + quote;
+        }
+        if (obj instanceof List list) {
+            StringBuffer sb = new StringBuffer("[");
+            boolean first = true;
+            for (Object elem : list) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                first = false;
+                sb.append(genericToString(elem, g));
+            }
+            sb.append("]");
+            return sb.toString();
+        }
         if (declaresMethod(obj, "toString") || cls.equals(Object.class)) {
             return obj.toString();
         }
@@ -224,12 +264,7 @@ public class ReflectionHelper {
             }
             String k = (String)keys[i];
             Object v = m.get(k);
-            String s;
-            if (g.checkRecursiveCall(v)) {
-                s = genericToString(v, g);
-            } else {
-                s = "<circular>";
-            }
+            String s = genericToString(v, g);
             sb.append(k);
             sb.append("=");
             sb.append(s);
@@ -239,7 +274,7 @@ public class ReflectionHelper {
     }
     
     public static boolean genericEquality(Object obj1, Object obj2) {
-        return genericEquality(obj1, new RecursionGuard(obj1), obj2, new RecursionGuard(obj2));
+        return genericEquality(obj1, new RecursionGuard(), obj2, new RecursionGuard());
     }
     
     private static Long asLong(Object obj) {
@@ -284,19 +319,24 @@ public class ReflectionHelper {
         for (int i = 0; i < n; i++) {
             Object obj1 = lst1.get(i);
             Object obj2 = lst2.get(i);
-            if (g1.checkRecursiveCall(obj1) && g2.checkRecursiveCall(obj2)) {
-                if (!genericEquality(obj1, g1, obj2, g2)) {
-                    return false;
-                }
-            } else {
+            if (!genericEquality(obj1, g1, obj2, g2)) {
                 return false;
             }
         }
         return true;
     } 
     
-    @SuppressWarnings("rawtypes")
     private static boolean genericEquality(Object obj1, RecursionGuard g1, Object obj2, RecursionGuard g2) {
+        if (g1.checkRecursionLimit(obj1) || g2.checkRecursionLimit(obj2)) {
+            return false;
+        }
+        boolean res = genericEqualityUnchecked(obj1, g1, obj2, g2);
+        g1.remove(obj1);
+        g2.remove(obj2);
+        return res;
+    }
+    @SuppressWarnings("rawtypes")
+    private static boolean genericEqualityUnchecked(Object obj1, RecursionGuard g1, Object obj2, RecursionGuard g2) {
         if (obj1 == obj2) {
             return true;
         }
@@ -352,11 +392,7 @@ public class ReflectionHelper {
         for (Map.Entry<String, Object> e1 : m1.entrySet()) {
             Object v1 = e1.getValue();
             Object v2 = m2.get(e1.getKey());
-            if (g1.checkRecursiveCall(v1) && g2.checkRecursiveCall(v2)) {
-                if (!genericEquality(v1, g1, v2, g2)) {
-                    return false;
-                }
-            } else {
+            if (!genericEquality(v1, g1, v2, g2)) {
                 return false;
             }
         }
