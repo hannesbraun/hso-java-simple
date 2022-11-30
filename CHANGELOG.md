@@ -1,3 +1,6 @@
+1.2.0 (2022-11-08)
+* Support for structural equality
+
 1.1.2 (2022-09-30)
 * Several improvements
 
