@@ -46,6 +46,19 @@ public class JSimple {
         return new ImpossibleException("The impossible happened in method " + methodName + getFormattedLocation(entry));
     }
     
+    public static IllegalException illegal(String msg) {
+        return new IllegalException(msg);
+    }
+    
+    public static IllegalException illegal() {
+        StackTraceElement entry = getStackTraceElement();
+        if (entry == null) {
+            return illegal("illegal");
+        }
+        String methodName = entry.getMethodName();
+        return new IllegalException("Something illegal happened in method " + methodName + getFormattedLocation(entry));
+    }    
+    
     /* TESTS */
     static {
         Thread hook = new Thread(() -> shutdownHook());
